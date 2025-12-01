@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DANIELS Futuristic Game Hub</title>
+<style>
+    body{
+        margin:0;
+        background:#05050f;
+        font-family:'Segoe UI',sans-serif;
+        color:white;
+        overflow-x:hidden;
+    }
+    header{
+        text-align:center;
+        padding:20px;
+        font-size:35px;
+        font-weight:bold;
+        color:#00eaff;
+        text-shadow:0 0 15px #00eaff;
+    }
+    .hidden{ display:none; }
+
+    /* Home Grid */
+    .container{
+        width:90%;
+        margin:auto;
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+        gap:25px;
+    }
+    .game-card{
+        background:rgba(0,255,255,0.08);
+        border:1px solid #00eaff55;
+        padding:20px;
+        border-radius:12px;
+        text-align:center;
+        cursor:pointer;
+        transition:0.3s;
+        box-shadow:0 0 20px #00eaff20;
+    }
+    .game-card:hover{
+        transform:scale(1.05);
+        box-shadow:0 0 25px #00eaff70;
+    }
+    .game-card img{
+        width:100%;
+        border-radius:10px;
+        margin-bottom:10px;
+    }
+
+    /* Game Screen */
+    #game-screen{
+        width:90%;
+        margin:30px auto;
+        padding:20px;
+        background:#000814;
+        border:1px solid #00eaff55;
+        border-radius:12px;
+        display:none;
+        box-shadow:0 0 30px #00eaff40;
+        min-height:400px;
+        text-align:center;
+    }
+    .back-btn{
+        background:#00eaff;
+        color:#000;
+        padding:10px 20px;
+        border:none;
+        margin-bottom:20px;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:bold;
+    }
+    canvas{
+        background:black;
+        border:2px solid cyan;
+        display:block;
+        margin:auto;
+    }
+
+    /* Memory Game */
+    .memory-grid{
+        display:grid;
+        grid-template-columns:repeat(4, 1fr);
+        gap:10px;
+        max-width:300px;
+        margin:auto;
+    }
+    .card{
+        background:#111;
+        padding:30px;
+        border:2px solid #00eaff;
+        cursor:pointer;
+        text-align:center;
+        font-size:24px;
+    }
+</style>
+</head>
+<body>
+
+<!-- SOUND EFFECTS -->
+<audio id="ui-click" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+<audio id="game-click" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"></audio>
+<audio id="eat" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav"></audio>
+<audio id="jump" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-mechanical-jump-205.wav"></audio>
+
+<header>⚡ DANIELS GAME HUB ⚡</header>
+
+<!-- HOME SCREEN -->
+<div id="home-screen">
+    <div class="container">
+        <div class="game-card" onclick="openGame('tic')">
+            <img src="https://i.imgur.com/L8O3a6F.png">
+            <h3>Tic Tac Toe</h3>
+        </div>
+
+        <div class="game-card" onclick="openGame('snake')">
+            <img src="https://i.imgur.com/h0JcRnn.png">
+            <h3>Snake</h3>
+        </div>
+
+        <div class="game-card" onclick="openGame('memory')">
+            <img src="https://i.imgur.com/V9HReGp.png">
+            <h3>Memory Match</h3>
+        </div>
+
+        <div class="game-card" onclick="openGame('rps')">
+            <img src="https://i.imgur.com/9x2TvhW.png">
+            <h3>Rock Paper Scissors</h3>
+        </div>
+
+        <div class="game-card" onclick="openGame('flappy')">
+            <img src="https://i.imgur.com/4Xq8DPy.png">
+            <h3>Flappy Block</h3>
+        </div>
+    </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen"></div>
+
+<script>
+// PAGE CONTROLLER
+function openGame(g){
+    document.getElementById("ui-click").play();
+    document.getElementById("home-screen").style.display="none";
+    document.getElementById("game-screen").style.display="block";
+    loadGame(g);
+}
+
+function backHome(){
+    document.getElementById("ui-click").play();
+    document.getElementById("game-screen").style.display="none";
+    document.getElementById("home-screen").style.display="block";
+    document.getElementById("game-screen").innerHTML="";
+}
+
+// GAME LOADER
+function loadGame(game){
+    const gs=document.getElementById("game-screen");
+    let html = `<button class='back-btn' onclick='backHome()'>⬅ Back</button>`;
+
+    /* ---------------- TIC TAC TOE ---------------- */
+    if(game==="tic"){
+        html += `
+            <h2>Tic Tac Toe</h2>
+            <table id='board' style='margin:auto;font-size:40px;border-collapse:collapse;'>
+                ${[0,1,2].map(r=>`
+                    <tr>
+                        ${[0,1,2].map(c =>
+                            `<td onclick="playTTT(this)" style='width:80px;height:80px;border:2px solid cyan;text-align:center;'></td>`
+                        ).join('')}
+                    </tr>
+                `).join('')}
+            </table>
+        `;
+    }
+
+    /* ---------------- SNAKE ---------------- */
+    if(game==="snake"){
+        html += `
+        <h2>Snake</h2>
+        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+        `;
+    }
+
+    /* ---------------- MEMORY MATCH ---------------- */
+    if(game==="memory"){
+        html += `
+        <h2>Memory Match</h2>
+        <div class="memory-grid" id="memoryGrid"></div>`;
+    }
+
+    /* ---------------- RPS ---------------- */
+    if(game==="rps"){
+        html += `
+        <h2>Rock Paper Scissors</h2>
+        <button onclick="rps('rock')">🪨 Rock</button>
+        <button onclick="rps('paper')">📄 Paper</button>
+        <button onclick="rps('scissors')">✂ Scissors</button>
+        <h3 id="rpsResult"></h3>
+        `;
+    }
+
+    /* ---------------- FLAPPY ---------------- */
+    if(game==="flappy"){
+        html += `
+        <h2>Flappy Block</h2>
+        <canvas id="flappyCanvas" width="300" height="400"></canvas>
+        <p>Tap to Jump</p>`;
+    }
+
+    gs.innerHTML = html;
+
+    if(game==="snake") startSnake();
+    if(game==="memory") startMemory();
+    if(game==="flappy") startFlappy();
+}
+
+/* ----------- TIC TAC TOE LOGIC ----------- */
+let turn="X";
+function playTTT(cell){
+    if(cell.innerHTML!=="") return;
+    cell.innerHTML = turn;
+    document.getElementById("game-click").play();
+    turn = turn==="X" ? "O":"X";
+}
+
+/* ----------- SNAKE GAME ----------- */
+function startSnake(){
+    const canvas=document.getElementById("snakeCanvas");
+    const ctx=canvas.getContext("2d");
+
+    let snake=[{x:200,y:200}];
+    let dir={x:20,y:0};
+    let food={x:100,y:100};
+
+    document.addEventListener("keydown",function(e){
+        if(e.key==="ArrowUp") dir={x:0,y:-20};
+        if(e.key==="ArrowDown") dir={x:0,y:20};
+        if(e.key==="ArrowLeft") dir={x:-20,y:0};
+        if(e.key==="ArrowRight") dir={x:20,y:0};
+    });
+
+    setInterval(()=>{
+        let head={x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+        snake.unshift(head);
+
+        if(head.x===food.x && head.y===food.y){
+            document.getElementById("eat").play();
+            food={
+                x:Math.floor(Math.random()*20)*20,
+                y:Math.floor(Math.random()*20)*20
+            };
+        } else snake.pop();
+
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,400,400);
+
+        ctx.fillStyle="cyan";
+        snake.forEach(s=>ctx.fillRect(s.x,s.y,20,20));
+
+        ctx.fillStyle="yellow";
+        ctx.fillRect(food.x,food.y,20,20);
+    },150);
+}
+
+/* ----------- MEMORY GAME ----------- */
+function startMemory(){
+    const grid=document.getElementById("memoryGrid");
+    let values=["A","A","B","B","C","C","D","D"];
+    values.sort(()=>Math.random()-0.5);
+
+    let first=null;
+
+    values.forEach(v=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.dataset.value=v;
+        card.innerHTML="?";
+        card.onclick=function(){
+            if(this.innerHTML!=="?") return;
+            this.innerHTML=this.dataset.value;
+            document.getElementById("game-click").play();
+
+            if(!first){
+                first=this;
+            }else{
+                if(first.dataset.value!==this.dataset.value){
+                    setTimeout(()=>{
+                        first.innerHTML="?";
+                        this.innerHTML="?";
+                    },600);
+                }
+                first=null;
+            }
+        };
+        grid.appendChild(card);
+    });
+}
+
+/* ----------- RPS ----------- */
+function rps(player){
+    document.getElementById("game-click").play();
+    const cpu=["rock","paper","scissors"][Math.floor(Math.random()*3)];
+    let result="";
+
+    if(player===cpu) result="It's a tie!";
+    else if(
+        (player==="rock" && cpu==="scissors") ||
+        (player==="paper" && cpu==="rock") ||
+        (player==="scissors" && cpu==="paper")
+    ) result="You win!";
+    else result="CPU wins!";
+
+    document.getElementById("rpsResult").innerHTML=`You: ${player} | CPU: ${cpu}<br>${result}`;
+}
+
+/* ----------- FLAPPY BLOCK ----------- */
+function startFlappy(){
+    const cv=document.getElementById("flappyCanvas");
+    const ctx=cv.getContext("2d");
+
+    let y=200, vel=0;
+    let pipes=[{x:300,gap:150}];
+
+    cv.onclick=()=>{
+        vel=-6;
+        document.getElementById("jump").play();
+    };
+
+    setInterval(()=>{
+        vel+=0.4;
+        y+=vel;
+
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,300,400);
+
+        ctx.fillStyle="cyan";
+        ctx.fillRect(50,y,20,20);
+
+        pipes.forEach(p=>{
+            ctx.fillStyle="magenta";
+
+            ctx.fillRect(p.x,0,40,p.gap-60);
+            ctx.fillRect(p.x,p.gap+60,40,400);
+
+            p.x-=4;
+
+            if(p.x<100 && p.x>50 &&
+               (y<p.gap-60 || y>p.gap+60)){
+                alert("Game Over!");
+                backHome();
+            }
+        });
+
+        if(pipes[pipes.length-1].x<150){
+            pipes.push({x:300, gap:100+Math.random()*150});
+        }
+
+        if(y>380){
+            alert("Game Over!");
+            backHome();
+        }
+    },30);
+}
+</script>
+
+</body>
+</html>
