@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ultimate Game Store</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Poppins, Arial;
+            background: #0d1b2a;
+            color: white;
+        }
+
+        /* Header */
+        header {
+            background: #124ebf;
+            padding: 25px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px #00000055;
+            animation: slideDown 1s ease-out;
+        }
+
+        /* Search */
+        .search-box {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .search-box input {
+            width: 60%;
+            padding: 12px 15px;
+            border-radius: 30px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            width: 70%;
+            box-shadow: 0 0 15px #00b4d8;
+        }
+
+        /* Grid */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+
+        /* Cards */
+        .card {
+            background: #1e2d45;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px #00000055;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: fadeIn 0.7s forwards;
+            transition: 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1);
+            box-shadow: 0 0 25px #0096c7;
+        }
+
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+        .card:hover img {
+            filter: brightness(1.2);
+        }
+
+        .card h3 {
+            margin: 10px;
+        }
+
+        .card p {
+            margin: 0 10px 15px 10px;
+            color: #cccccc;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background: linear-gradient(45deg, #0077ff, #00bbff);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<header>ULTIMATE GAME STORE</header>
+
+<div class="search-box">
+    <input type="text" id="search" placeholder="Search games..." onkeyup="filterGames()">
+</div>
+
+<div id="gameContainer" class="container">
+
+    <!-- GAME CARDS -->
+
+    <div class="card" data-title="Speed Racer">
+        <img src="game1.jpg">
+        <h3>Speed Racer</h3>
+        <p>High-speed racing through futuristic cities.</p>
+        <button onclick="downloadFile('SpeedRacer.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Puzzle Master">
+        <img src="game2.jpg">
+        <h3>Puzzle Master</h3>
+        <p>Brain-challenging puzzles and mind games.</p>
+        <button onclick="downloadFile('PuzzleMaster.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Battle Arena">
+        <img src="game3.jpg">
+        <h3>Battle Arena</h3>
+        <p>Fight enemies in epic arena battles.</p>
+        <button onclick="downloadFile('BattleArena.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Zombie Hunter">
+        <img src="game4.jpg">
+        <h3>Zombie Hunter</h3>
+        <p>Survive waves of zombies and upgrade weapons.</p>
+        <button onclick="downloadFile('ZombieHunter.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Galaxy Defender">
+        <img src="game5.jpg">
+        <h3>Galaxy Defender</h3>
+        <p>Protect planets from alien invasions.</p>
+        <button onclick="downloadFile('GalaxyDefender.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Street Fighter Heroes">
+        <img src="game6.jpg">
+        <h3>Street Fighter Heroes</h3>
+        <p>Classic 1v1 street fighting action.</p>
+        <button onclick="downloadFile('StreetFighterHeroes.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Car Drift X">
+        <img src="game7.jpg">
+        <h3>Car Drift X</h3>
+        <p>Master drifting on difficult tracks.</p>
+        <button onclick="downloadFile('CarDriftX.zip')">Download</button>
+    </div>
+
+    <div class="card" data-title="Dragon Quest RPG">
+        <img src="game8.jpg">
+        <h3>Dragon Quest RPG</h3>
+        <p>Explore kingdoms, fight monsters, find treasure.</p>
+        <button onclick="downloadFile('DragonQuestRPG.zip')">Download</button>
+    </div>
+
+</div>
+
+<script>
+    function downloadFile(file) {
+        alert("Downloading: " + file);
+        window.location.href = file;
+    }
+
+    function filterGames() {
+        let search = document.getElementById("search").value.toLowerCase();
+        let cards = document.querySelectorAll(".card");
+
+        cards.forEach(card => {
+            let title = card.getAttribute("data-title").toLowerCase();
+            card.style.display = title.includes(search) ? "block" : "none";
+        });
+    }
+</script>
+
+</body>
+</html>
